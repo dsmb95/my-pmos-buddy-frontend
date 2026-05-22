@@ -1,11 +1,11 @@
-# your-app-name - Frontend
+# MyPMOSBuddy - Frontend
 
-React web application for your-app-name.
+React web application for MyPMOSBuddy.
 
 ## Prerequisites
 
 - Node.js installed
-- Backend server running (see your-app-name-backend repo)
+- Backend server running (see my-pmos-buddy-backend repo)
 
 ## Setup
 
