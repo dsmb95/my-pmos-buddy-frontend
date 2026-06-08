@@ -4,6 +4,7 @@ import "./App.css";
 import RegistrationPage from "./screens/RegistrationPage.jsx";
 import LoginPage from "./screens/LoginPage.jsx";
 import ProfilePage from "./screens/ProfilePage.jsx";
+import FlowPage from "./screens/FlowPage.jsx";
 
 function App() {
   const [show, setShow] = useState(true);
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/flow" element={<FlowPage/>} />
       </Routes>
     </>
   );

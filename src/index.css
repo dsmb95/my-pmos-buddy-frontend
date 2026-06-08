@@ -15,36 +15,136 @@
 
 .page-container{
   display: grid;
-  grid-template-column: 1fr 3fr;
-}
-
-
-.page-container{
-  display: grid;
   grid-template-columns: 1fr 4fr;
   margin: 50px;
+  gap: 30px;
 }
 
 .profile-container{
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 0.5fr 1fr 1fr;
+  gap: 20px;
 }
 
 .profile-banner {
   grid-column: 1 / -1; /* Spans across all columns in the grid */
-  border-radius: 10px;
+  border-radius: 15px;
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
-  border: 2px solid black;
   align-self: center;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  color: #333;
 }
 
 .data-card {
   text-align: center;
-  padding: 20px;
-  border: 2px solid black;
-  margin: 10px;
-  border-radius: 10px;
+  padding: 25px;
+  background-color: #ffffff;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  margin: 0; /* Spacing is now handled by the grid gap */
+  border-radius: 15px;
+  color: #444;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.data-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* --- React Calendar  --- */
+.react-calendar {
+  border: 1px solid #eaeaea !important;
+  border-radius: 15px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+  padding: 15px !important;
+  font-family: inherit !important;
+  background-color: #ffffff !important;
+}
+
+.react-calendar__navigation button {
+  border-radius: 8px !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f0f0f0 !important;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.react-calendar__tile {
+  border-radius: 8px !important;
+  padding: 12px 6px !important;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #f0f0f0 !important;
+  border-radius: 8px !important;
+}
+
+.react-calendar__tile--active {
+  background-color: #f9a73e !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+
+
+.react-calendar__tile--now {
+  border: 2px solid #f9a73e !important; /* Highlights today with your orange theme color */
+  font-weight: 800;
+}
+
+/* Add the word "TODAY" below the date number */
+.react-calendar__tile--now::after {
+  content: "TODAY";
+  display: block;
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: #f9a73e;
+  margin-top: 2px;
+}
+
+/* Make the "TODAY" text white if the user clicks on it */
+.react-calendar__tile--now.react-calendar__tile--active::after {
+  color: black !important;
+  font-weight: bolder;
+}
+
+/* Optional: What it looks like when you hover over today's date */
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background-color: #fff59d !important; 
+}
+
+
+/* react-calendar custom highlights */
+.highlight-period {
+  background-color: #ff4c4c !important; /* Soft Red */
+  color: #333 !important;
+  border-radius: 8px !important;
+}
+
+.highlight-fertile {
+  background-color: #4a90e2 !important; /* Soft Green */
+  color: #333 !important;
+  border-radius: 8px !important;
+}
+
+.highlight-pms {
+  background-color: #1abc9c !important; /* Soft Blue */
+  color: #333 !important;
+  border-radius: 8px !important;
 }

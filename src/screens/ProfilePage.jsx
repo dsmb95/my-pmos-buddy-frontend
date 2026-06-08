@@ -76,7 +76,7 @@ function ProfilePage() {
 
         const latestFlowDoc = flowDataJSON[flowDataJSON.length - 1];
         const latestFlowData =
-          latestFlowDoc?.flowData?.[latestFlowDoc?.flowData.length - 1];
+          latestFlowDoc?.flowData;
 
         const latestSkinDoc = skinDataJSON[skinDataJSON.length - 1];
         const latestSkinData =
@@ -115,7 +115,7 @@ function ProfilePage() {
           <p>Welcome, {name}</p>
         </div>
         <div className="data-card">
-          <h2>Flow</h2>
+          <Link to="/flow"><h2>Flow</h2></Link>
           <p>Last period started on: {formatDate(flowData?.lastPeriod)}</p>
           <p>
             Cycle length: {flowData?.apiPrediction?.data?.cycle_length} days
