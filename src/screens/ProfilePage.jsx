@@ -13,6 +13,7 @@ function ProfilePage() {
   const [medData, setMedData] = useState("");
   const [weightData, setWeightData] = useState("");
   const [name, setName] = useState("");
+  const [expandedPhoto, setExpandedPhoto] = useState(null);
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -154,16 +155,27 @@ function ProfilePage() {
               : "None logged"}
           </p>
           <p>Notes: {skinData?.skinNotes}</p>
-          <div className="data-card-photos">
-            {skinData?.photos?.map((photo, index) => (
+        {skinData?.photos && skinData.photos.length > 0 && (
+          <div style={{ 
+            display: "flex", 
+            flexWrap: "nowrap", 
+            gap: "10px", 
+            overflowX: "auto", 
+            padding: "10px 0", 
+            scrollSnapType: "x mandatory",
+            justifyContent: "center"
+          }}>
+            {skinData.photos.map((photo, index) => (
               <img 
                 key={index} 
                 src={photo.url} 
-                alt="Skin log" 
-                style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "12px", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }} 
+                alt={`Skin log ${index + 1}`} 
+                style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "12px", flexShrink: 0, scrollSnapAlign: "start", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", cursor: "pointer" }} 
+                onClick={() => setExpandedPhoto(photo.url)}
               />
             ))}
           </div>
+        )}
         </div>
         <div className="data-card">
           <Link to="/medication"><h2>Medications</h2></Link>
@@ -178,7 +190,7 @@ function ProfilePage() {
             <h2>Weight</h2>
           </Link>
           <div>
-            <WeightChart />
+            <WeightChart height="200px" />
           </div>
           <p>Last logged on: {formatDate(weightData?.date)}</p>
           <p>
@@ -186,6 +198,43 @@ function ProfilePage() {
           </p>
         </div>
       </div>
+
+      {/* Expanded Photo Overlay Modal */}
+      {expandedPhoto && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            cursor: "pointer",
+          }}
+          onClick={() => setExpandedPhoto(null)}
+        >
+          <img
+            src={expandedPhoto}
+            alt="Expanded skin log"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              objectFit: "contain",
+              borderRadius: "12px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
+            }}
+          />
+          <button
+            style={{ position: "absolute", top: "20px", right: "30px", background: "transparent", color: "white", border: "none", fontSize: "2rem", cursor: "pointer", fontWeight: "bold" }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
     </div>
   );
 }

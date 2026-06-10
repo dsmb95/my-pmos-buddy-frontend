@@ -12,7 +12,7 @@ import {
   ResponsiveContainer
 } from "recharts";
 
-function WeightChart() {
+function WeightChart({ height = "350px" }) {
   const [weightData, setWeightData] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -61,7 +61,7 @@ function WeightChart() {
   return (
     <>
       <h2>Weight Trend</h2>
-      <div style={{ width: "100%", height: "350px", marginTop: "20px" }}>
+      <div style={{ width: "100%", height: height, marginTop: "20px" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#eaeaea" />
