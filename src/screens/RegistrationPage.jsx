@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { useNavigate, Link } from "react-router-dom";
+import logo from "../assets/My PMOS Buddy Logo.png";
 
 function RegistrationPage() {
   const [loading, setLoading] = useState(false);
@@ -65,7 +66,7 @@ function RegistrationPage() {
         <div className="welcome-banner">
           <h1>Welcome to My PMOS Buddy</h1>
           <h3>Your bestfriend in learning your patterns.</h3>
-          {/* <img /> */}
+          <img src={logo} alt="My PMOS Buddy Logo" />
         </div>
       </div>
       <div className="registration-col-2">
@@ -81,6 +82,7 @@ function RegistrationPage() {
           <TextField
             required
             id="outline-required"
+            type="email"
             label="Email"
             value={email}
             onChange={({ target }) => setEmail(target.value)}
@@ -89,6 +91,7 @@ function RegistrationPage() {
           <TextField
             required
             id="outline-required"
+            type="password"
             label="Password"
             value={password}
             onChange={({ target }) => setPassword(target.value)}

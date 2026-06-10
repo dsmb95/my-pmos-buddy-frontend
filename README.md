@@ -20,11 +20,6 @@ React web application for MyPMOSBuddy.
 
 4. Open your browser at http://localhost:5173
 
-## Environment Variables
-
-Create a .env file in the root:
-   VITE_API_URL=http://localhost:5000
-
 ## Project Docs
 
 See the /docs folder for the project proposal and architecture diagram.

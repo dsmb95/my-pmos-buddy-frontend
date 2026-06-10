@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Menu from "../components/menu.jsx";
+import WeightChart from '../components/weightChart.jsx';
 
 function ProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -11,16 +13,6 @@ function ProfilePage() {
   const [medData, setMedData] = useState("");
   const [weightData, setWeightData] = useState("");
   const [name, setName] = useState("");
-
-  function formatDate(date) {
-    if (!date) return "No date";
-
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -58,10 +50,6 @@ function ProfilePage() {
           ]);
 
         if (
-          !flowRes.ok ||
-          !skinRes.ok ||
-          !medRes.ok ||
-          !weightRes.ok ||
           !nameRes.ok
         ) {
           setError("Unable to fetch user data.");
@@ -69,14 +57,13 @@ function ProfilePage() {
         }
 
         const nameDataJSON = await nameRes.json();
-        const flowDataJSON = await flowRes.json();
-        const skinDataJSON = await skinRes.json();
-        const medDataJSON = await medRes.json();
-        const weightDataJSON = await weightRes.json();
+        const flowDataJSON = flowRes.ok ? await flowRes.json() : [];
+        const skinDataJSON = skinRes.ok ? await skinRes.json() : [];
+        const medDataJSON = medRes.ok ? await medRes.json() : { medications: [] };
+        const weightDataJSON = weightRes.ok ? await weightRes.json() : [];
 
         const latestFlowDoc = flowDataJSON[flowDataJSON.length - 1];
-        const latestFlowData =
-          latestFlowDoc?.flowData;
+        const latestFlowData = latestFlowDoc?.flowData;
 
         const latestSkinDoc = skinDataJSON[skinDataJSON.length - 1];
         const latestSkinData =
@@ -101,13 +88,23 @@ function ProfilePage() {
     fetchAllData();
   }, []);
 
+  function formatDate(date) {
+    if (!date) return "No date";
+
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  }
+
   if (loading) return <CircularProgress aria-label="Loading..." />;
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <div className="page-container">
       <div className="menu">
-        <h1>Menu</h1>
+        <Menu/>
       </div>
 
       <div className="profile-container">
@@ -115,7 +112,9 @@ function ProfilePage() {
           <p>Welcome, {name}</p>
         </div>
         <div className="data-card">
-          <Link to="/flow"><h2>Flow</h2></Link>
+          <Link to="/flow">
+            <h2>Flow</h2>
+          </Link>
           <p>Last period started on: {formatDate(flowData?.lastPeriod)}</p>
           <p>
             Cycle length: {flowData?.apiPrediction?.data?.cycle_length} days
@@ -144,30 +143,44 @@ function ProfilePage() {
           </p>
         </div>
         <div className="data-card">
-          <h2>Skin</h2>
+          <Link to="/skin">
+            <h2>Skin</h2>
+          </Link>
           <p>Last logged on: {formatDate(skinData?.date)}</p>
           <p>
             Skin Log:{" "}
-            {skinData?.skinLog.map((data) => (
-              <p>{data}</p>
-            ))}
+            {skinData?.skinLog && skinData.skinLog.length > 0 
+              ? skinData.skinLog.join(", ") 
+              : "None logged"}
           </p>
           <p>Notes: {skinData?.skinNotes}</p>
-          {skinData?.photos.map((photo) => (
-            <img src={photo.url} />
-          ))}
+          <div className="data-card-photos">
+            {skinData?.photos?.map((photo, index) => (
+              <img 
+                key={index} 
+                src={photo.url} 
+                alt="Skin log" 
+                style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "12px", boxShadow: "0 4px 10px rgba(0,0,0,0.1)" }} 
+              />
+            ))}
+          </div>
         </div>
         <div className="data-card">
-          <h2>Medications</h2>
-          {medData?.medications.map((med) => (
-            <p>
+          <Link to="/medication"><h2>Medications</h2></Link>
+          {medData?.medications?.map((med, index) => (
+            <p key={index}>
               {med.name} {med.dosage} {med.frequency}
             </p>
           ))}
         </div>
         <div className="data-card">
-          <h2>Weight</h2>
-          <p>Last taken on: {formatDate(weightData?.date)}</p>
+          <Link to="/weight">
+            <h2>Weight</h2>
+          </Link>
+          <div>
+            <WeightChart />
+          </div>
+          <p>Last logged on: {formatDate(weightData?.date)}</p>
           <p>
             {weightData?.weight} {weightData?.unit}
           </p>

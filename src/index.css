@@ -1,3 +1,14 @@
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #fdfaf8; /* Soft warm off-white */
+  color: #4a4242; /* Soft charcoal instead of harsh black */
+}
+
+h1, h2, h3 {
+  color: #5c434a;
+  font-weight: 700;
+}
+
 .registration-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -13,11 +24,36 @@
   text-align: center;
 }
 
+.registration-col-2 form {
+  padding-top: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .page-container{
   display: grid;
   grid-template-columns: 1fr 4fr;
   margin: 50px;
   gap: 30px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.menu a.active,
+.menu a:hover {
+  color: #d67d8d; /* Elegant rose/blush tone */
+  font-weight: bold;
 }
 
 .profile-container{
@@ -35,22 +71,29 @@
   font-weight: bold;
   align-self: center;
   padding: 20px;
-  background-color: #ffffff;
-  border: 1px solid #eaeaea;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  color: #333;
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); /* Premium warm gradient */
+  border: none;
+  box-shadow: 0 8px 25px rgba(252, 182, 159, 0.25);
+  color: #5c434a;
 }
 
 .data-card {
   text-align: center;
   padding: 25px;
   background-color: #ffffff;
-  border: 1px solid #eaeaea;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: none;
+  box-shadow: 0 10px 30px rgba(214, 125, 141, 0.08); /* Soft rose-tinted shadow */
   margin: 0; /* Spacing is now handled by the grid gap */
-  border-radius: 15px;
-  color: #444;
+  border-radius: 20px;
+  color: #5c434a;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.data-card a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .data-card:hover {
@@ -58,10 +101,23 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 }
 
+.data-card h2 {
+  color: #d67d8d; /* Blush headers inside cards */
+  margin-top: 0;
+}
+
+.data-card-photos {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
 /* --- React Calendar  --- */
 .react-calendar {
-  border: 1px solid #eaeaea !important;
-  border-radius: 15px !important;
+  border: none !important;
+  border-radius: 20px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
   padding: 15px !important;
   font-family: inherit !important;
@@ -96,14 +152,14 @@
 }
 
 .react-calendar__tile--active {
-  background-color: #f9a73e !important;
+  background-color: #d67d8d !important;
   color: white !important;
   border-radius: 8px !important;
 }
 
 
 .react-calendar__tile--now {
-  border: 2px solid #f9a73e !important; /* Highlights today with your orange theme color */
+  border: 2px solid #d67d8d !important;
   font-weight: 800;
 }
 
@@ -113,7 +169,7 @@
   display: block;
   font-size: 0.6rem;
   font-weight: bold;
-  color: #f9a73e;
+  color: #d67d8d;
   margin-top: 2px;
 }
 
@@ -132,19 +188,19 @@
 
 /* react-calendar custom highlights */
 .highlight-period {
-  background-color: #ff4c4c !important; /* Soft Red */
-  color: #333 !important;
+  background-color: #ffb6b9 !important; /* Pastel Pink/Red */
+  color: #5c434a !important;
   border-radius: 8px !important;
 }
 
 .highlight-fertile {
-  background-color: #4a90e2 !important; /* Soft Green */
-  color: #333 !important;
+  background-color: #b2cefe !important; /* Pastel Blue */
+  color: #5c434a !important;
   border-radius: 8px !important;
 }
 
 .highlight-pms {
-  background-color: #1abc9c !important; /* Soft Blue */
-  color: #333 !important;
+  background-color: #a8e6cf !important; /* Pastel Mint */
+  color: #5c434a !important;
   border-radius: 8px !important;
 }
