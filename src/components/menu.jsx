@@ -30,7 +30,7 @@ function Menu() {
   };
   return (
     <>
-      <h1>Menu</h1>
+      <h1 style={{paddingTop:50}}>Menu</h1>
       <NavLink to="/profile">Home</NavLink>
       <NavLink to="/flow">Flow</NavLink>
       <NavLink to="/skin">Skin</NavLink>

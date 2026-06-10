@@ -13,6 +13,7 @@ function SkinPage() {
   const [skinData, setSkinData] = useState([]);
   const [skinRoutineAm, setSkinRoutineAm] = useState([]);
   const [skinRoutinePm, setSkinRoutinePm] = useState([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   const [showInitialRoutine, setShowInitialRoutine] = useState(true);
   const [showUpdatedRoutine, setShowUpdatedRoutine] = useState(false);
@@ -21,6 +22,8 @@ function SkinPage() {
   const [skinNotes, setSkinNotes] = useState("");
   const [skinCareAm, setSkinCareAm] = useState("");
   const [skinCarePm, setSkinCarePm] = useState("");
+  const [selectedPhotos, setSelectedPhotos] = useState([]);
+  const [expandedPhoto, setExpandedPhoto] = useState(null);
 
   const [updateRoutineAm, setUpdateRoutineAm] = useState("");
   const [updateRoutinePm, setUpdateRoutinePm] = useState("");
@@ -82,7 +85,7 @@ function SkinPage() {
     };
 
     getSkinData();
-  }, [skinData, skinRoutineAm, skinRoutinePm]);
+  }, [refreshTrigger]);
 
   const toggleSymptom = (value) => {
     setSymptoms((prev) => {
@@ -93,6 +96,18 @@ function SkinPage() {
     });
   };
 
+  const handlePhotoChange = (e) => {
+    if (e.target.files) {
+      // Add newly selected files to the existing array instead of replacing them
+      setSelectedPhotos((prev) => [...prev, ...Array.from(e.target.files)]);
+    }
+    e.target.value = null; // Reset the input so the user can select the same file again if needed
+  };
+
+  const removePhoto = (indexToRemove) => {
+    setSelectedPhotos((prev) => prev.filter((_, index) => index !== indexToRemove));
+  };
+
   const submitSkinData = async (e) => {
     e.preventDefault();
     setError("");
@@ -100,31 +115,50 @@ function SkinPage() {
     setLoading(true);
 
     try {
+      // If the user already has skin logs, use PUT to push to the array. Otherwise, use POST to create it!
+      const method = skinData && skinData.length > 0 ? "PUT" : "POST";
+
+      const formData = new FormData();
+      formData.append("skinNotes", skinNotes);
+      
+      symptoms.forEach(symptom => {
+        formData.append("skinLog", symptom);
+      });
+
+      selectedPhotos.forEach(photo => {
+        formData.append("photos", photo);
+      });
+
       const response = await fetch(
         "https://my-pmos-buddy-backend.onrender.com/api/skin",
         {
-          method: "POST",
+          method: method,
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            skinLog: symptoms,
-            skinNotes: skinNotes,
-          }),
+          body: formData,
         },
       );
 
-      const data = await response.json();
+      // Safely parse the response as text first, in case the backend crashed and returned HTML
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseErr) {
+        data = { message: responseText };
+      }
 
       if (!response.ok) {
-        setError(data.message || "Submit failed.");
+        console.error("Backend Error Response:", data);
+        const errorString = JSON.stringify(data);
+        setError(data.message || data.error || (errorString !== "{}" ? errorString : "Server error: Check your backend terminal (Cloudinary keys are likely missing or invalid)."));
         return;
       }
 
       setSuccess("Skin log successfully updated!");
       setSymptoms([]);
       setSkinNotes("");
+      setSelectedPhotos([]);
+      setRefreshTrigger((prev) => !prev);
     } catch (err) {
       setError(err.message || "Failed to submit your skin data.");
     } finally {
@@ -180,6 +214,7 @@ function SkinPage() {
       setSkinCarePm("");
       setShowInitialRoutine(false);
       setShowUpdatedRoutine(true);
+      setRefreshTrigger((prev) => !prev);
     } catch (err) {
       setError(err.message || "Failed to submit Skin Care Routine.");
     } finally {
@@ -226,6 +261,7 @@ function SkinPage() {
       setUpdateRoutineAm("");
       setUpdateRoutinePm("");
       setShowInitialRoutine(false);
+      setRefreshTrigger((prev) => !prev);
     } catch (err) {
       setError(err.message || "Failed to submit Skin Care Routine.");
     } finally {
@@ -264,6 +300,29 @@ function SkinPage() {
                       : entry?.skinLog}
                   </p>
                   <p style={{ margin: "5px 0" }}><strong>Notes:</strong> {entry?.skinNotes}</p>
+                  {entry?.photos && entry.photos.length > 0 && (
+                    <>
+                      <p style={{ margin: "5px 0" }}><strong>Photos:</strong></p>
+                      <div style={{ 
+                        display: "flex", 
+                        flexWrap: "nowrap", 
+                        gap: "10px", 
+                        overflowX: "auto", 
+                        padding: "10px 0", 
+                        scrollSnapType: "x mandatory"
+                      }}>
+                        {entry.photos.map((photo, photoIdx) => (
+                          <img 
+                            key={photoIdx} 
+                            src={photo.url} 
+                            alt={`Skin log ${photoIdx + 1}`} 
+                            style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", flexShrink: 0, scrollSnapAlign: "start", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer" }}
+                            onClick={() => setExpandedPhoto(photo.url)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               ))}
               {(!skinData || skinData.length === 0) && <p>No skin logs yet.</p>}
@@ -372,6 +431,59 @@ function SkinPage() {
                       onChange={({ target }) => setSkinNotes(target.value)}
                     />
                   </div>
+
+                  <div style={{ textAlign: "center" }}>
+                    <h4>Photos:</h4>
+                    <Button variant="outlined" component="label" sx={{ mb: 2 }}>
+                      Select Photos
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        hidden
+                        onChange={handlePhotoChange}
+                      />
+                    </Button>
+                    {selectedPhotos.length > 0 && (
+                      <div>
+                        <p style={{ marginTop: 0 }}>{selectedPhotos.length} photo(s) selected.</p>
+                        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center", marginBottom: "15px" }}>
+                          {selectedPhotos.map((photo, index) => (
+                            <div key={index} style={{ position: "relative" }}>
+                              <img
+                                src={URL.createObjectURL(photo)}
+                                alt={`preview-${index}`}
+                                style={{ width: "60px", height: "60px", objectFit: "cover", borderRadius: "8px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removePhoto(index)}
+                                style={{
+                                  position: "absolute",
+                                  top: "-8px",
+                                  right: "-8px",
+                                  background: "#ffb6b9",
+                                  color: "#5c434a",
+                                  border: "none",
+                                  borderRadius: "50%",
+                                  width: "20px",
+                                  height: "20px",
+                                  cursor: "pointer",
+                                  fontSize: "10px",
+                                  fontWeight: "bold",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center"
+                                }}
+                              >
+                                X
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <Button type="submit" variant="contained" size="medium">
@@ -412,6 +524,43 @@ function SkinPage() {
           </div>
         </div>
       </div>
+
+      {/* Expanded Photo Overlay Modal */}
+      {expandedPhoto && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+            cursor: "pointer",
+          }}
+          onClick={() => setExpandedPhoto(null)}
+        >
+          <img
+            src={expandedPhoto}
+            alt="Expanded skin log"
+            style={{
+              maxWidth: "90%",
+              maxHeight: "90%",
+              objectFit: "contain",
+              borderRadius: "12px",
+              boxShadow: "0 8px 30px rgba(0,0,0,0.5)",
+            }}
+          />
+          <button
+            style={{ position: "absolute", top: "20px", right: "30px", background: "transparent", color: "white", border: "none", fontSize: "2rem", cursor: "pointer", fontWeight: "bold" }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
     </div>
   );
 }
