@@ -38,12 +38,14 @@
 # Cost Estimate:
     (Free Tier/ Personal Project)
     1. API Verve (Menstrual Cycle API): $00.00/ month (100 credits per month)
-    2. Render.com: $00.00/ month (deploy up to 25 services, 5GB of bandwidth)
-    3. Cloudinary: $00.00/ month (3 users, 1 product environment, 25 monthly credits 500 admin)
-        TOTAL: $00.00/month
+    2. Render.com: $00.00 (deploy up to 25 services, 5GB of bandwidth)
+    3. Cloudinary: $00.00(3 users, 1 product environment, 25 monthly credits 500 admin)
+    4. MongoDB Atlas: $00.00 (512 MB)
+        TOTAL: $00.00
     
     (Small Scale Project)
     1. API Verve (Menstrual Cycle API): $29.99/ month (100,000 credits per month)
     2. Render.com: $25/ month (no service limit, 25GB of bandwidth)
     3. Cloudinary: $99/ month (3 users, 2 product environments, 225 monthly credits, 2000 admin API limit)
-        TOTAL: $153.99/ month
+    4. 4. MongoDB Atlas: $30.00 (5 GB)
+        TOTAL: $183.99/ month
