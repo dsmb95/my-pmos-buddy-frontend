@@ -125,7 +125,7 @@ function FlowPage() {
 
     try {
       const body = {
-        lastPeriod: lastPeriod,
+        lastPeriod: lastPeriod ? new Date(lastPeriod.replace(/-/g, "/")) : null,
         cycleLength: cycleLength ? Number(cycleLength) : 28,
         periodLength: periodLength ? Number(periodLength) : 5,
       };
@@ -171,7 +171,7 @@ function FlowPage() {
     try {
       const body = {};
 
-      if (lastPeriod) body.updateLastPeriod = lastPeriod;
+      if (lastPeriod) body.updateLastPeriod = new Date(lastPeriod.replace(/-/g, "/"));
       if (cycleLength) body.updateCycleLength = Number(cycleLength);
       if (periodLength) body.updatePeriodLength = Number(periodLength);
 
@@ -262,7 +262,7 @@ function FlowPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            periodDay: periodDate,
+            periodDay: periodDate ? new Date(periodDate.replace(/-/g, "/")) : null,
             firstDay: isFirstDay,
             flowLevel: flowLevel,
             periodNotes: periodNotes,
