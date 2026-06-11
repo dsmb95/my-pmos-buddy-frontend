@@ -42,7 +42,8 @@ function LoginPage() {
       setLoading(false);
       navigate("/profile");
     } catch (err) {
-      setError(err);
+      setError(err.message || "An error occurred while logging in.");
+      setLoading(false);
     }
   };
 

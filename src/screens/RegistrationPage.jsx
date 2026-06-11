@@ -44,7 +44,8 @@ function RegistrationPage() {
       setLoading(false);
       navigate("/login");
     } catch (err) {
-      setError(err);
+      setError(err.message || "An error occurred while registering.");
+      setLoading(false);
     }
   };
 
