@@ -5,12 +5,12 @@ React web application for MyPMOSBuddy.
 ## Prerequisites
 
 - Node.js installed
-- Backend server running (see my-pmos-buddy-backend repo)
+- Backend server running (see https://github.com/dsmb95/my-pmos-buddy-backend.git)
 
 ## Setup
 
 1. Clone the repository
-   git clone https://github.com/YOUR_USERNAME/your-app-name-frontend.git
+   git clone https://github.com/dsmb95/my-pmos-buddy-frontend.git
 
 2. Install dependencies
    npm install
