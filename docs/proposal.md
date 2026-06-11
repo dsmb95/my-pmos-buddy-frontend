@@ -32,6 +32,7 @@
         - API Verve's Menstrual Cycle API
         - React-Calendar
         - Cloudinary (for image hosting)
+        - MongoDB Atlas
     7. Authentication:
     8. File Uploading: Multer
 
