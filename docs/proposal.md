@@ -23,7 +23,7 @@
     - This app is for all women especially those affected by PMOS. It is estimated that 10 - 15% of women are affected by this condition worldwide, which makes about 1 in every 8 women or a whoppping 170 million women globally. Despite it being common, it is reported that 70% of affected women remain undiagnosed. This is because of a very wide variety of symptoms like irregular periods, acne, weight gain etc. (World Health Organization).
 
 # Tech Stack: 
-    1. Database: MongoDB
+    1. Database: MongoDB Atlas
     2. Backend: Express.js
     3. Frontend: React
     4. Runtime: Node.js
