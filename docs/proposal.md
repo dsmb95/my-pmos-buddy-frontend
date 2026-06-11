@@ -33,7 +33,7 @@
         - React-Calendar
         - Cloudinary (for image hosting)
         - MongoDB Atlas
-    7. Authentication:
+    7. Authentication: Passport.js
     8. File Uploading: Multer
 
 # Cost Estimate:
