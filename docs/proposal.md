@@ -30,7 +30,6 @@
     5. Deployment: Render.com
     6. External API:
         - API Verve's Menstrual Cycle API
-        - React-Calendar
         - Cloudinary (for image hosting)
         - MongoDB Atlas
     7. Authentication: Passport.js
