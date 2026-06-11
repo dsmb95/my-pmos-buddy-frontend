@@ -58,7 +58,6 @@ function LoginPage() {
   }
 
   if (loading) return <CircularProgress aria-label="Loading..." />;
-  if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
     <Box className="registration-container" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
@@ -70,6 +69,11 @@ function LoginPage() {
         </div>
       </Box>
       <Box className="registration-col-2" sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", p: { xs: 4, md: 8 } }}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2, width: "100%", maxWidth: "400px" }}>
+            {error}
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "400px", display: "flex", flexDirection: "column", gap: "20px" }}>
           <TextField
             required
