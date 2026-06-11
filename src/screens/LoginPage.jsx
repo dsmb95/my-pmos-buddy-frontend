@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { useNavigate, Link } from "react-router-dom";
+import Box from "@mui/material/Box";
 import logo from "../assets/My PMOS Buddy Logo.png";
 
 function LoginPage() {
@@ -59,16 +60,16 @@ function LoginPage() {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <div className="registration-container">
-      <div className="registration-col-1">
+    <Box className="registration-container" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
+      <Box className="registration-col-1" sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", p: { xs: 4, md: 8 } }}>
         <div className="welcome-banner">
           <h1>Welcome to My PMOS Buddy</h1>
           <h3>Your bestfriend in learning your patterns.</h3>
-          <img src={logo} alt="My PMOS Buddy Logo" />
+          <img src={logo} alt="My PMOS Buddy Logo" style={{ maxWidth: "100%", height: "auto" }} />
         </div>
-      </div>
-      <div className="registration-col-2">
-        <form onSubmit={handleSubmit}>
+      </Box>
+      <Box className="registration-col-2" sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", p: { xs: 4, md: 8 } }}>
+        <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: "400px", display: "flex", flexDirection: "column", gap: "20px" }}>
           <TextField
             required
             id="outline-required"
@@ -90,13 +91,13 @@ function LoginPage() {
             Sign in
           </Button>
         </form>
-        <div className="option">
+        <div className="option" style={{ marginTop: "20px", textAlign: "center" }}>
           <p>
             Not yet registered? <Link to="/register">Sign up.</Link>
           </p>
         </div>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

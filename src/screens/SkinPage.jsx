@@ -5,6 +5,7 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import Menu from "../components/menu.jsx";
+import Box from "@mui/material/Box";
 
 function SkinPage() {
   const [loading, setLoading] = useState(true);
@@ -273,14 +274,14 @@ function SkinPage() {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <div className="page-container">
-      <div className="menu">
+    <Box className="page-container" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
+      <Box className="menu" sx={{ width: { xs: "100%", md: "250px" }, flexShrink: 0 }}>
         <Menu />
-      </div>
+      </Box>
 
-      <div>
-        <div>
-          <div>
+      <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, width: { xs: "100%", md: "calc(100% - 250px)" }, boxSizing: "border-box" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <Box>
             <h2>Summary</h2>
             <div className="data-card" style={{ maxHeight: "350px", overflowY: "auto", textAlign: "left", padding: "20px" }}>
               {skinData?.map((entry, index) => (
@@ -327,8 +328,8 @@ function SkinPage() {
               ))}
               {(!skinData || skinData.length === 0) && <p>No skin logs yet.</p>}
             </div>
-          </div>
-          <div>
+          </Box>
+          <Box>
             <h2>Skin Care Routine</h2>
             <div className="data-card" style={{ maxHeight: "350px", overflowY: "auto", textAlign: "center", padding: "20px" }}>
               <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "40px" }}>
@@ -361,9 +362,9 @@ function SkinPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div>
+          </Box>
+        </Box>
+        <Box sx={{ mt: 4 }}>
           <h2>Manage Skin Data</h2>
           {success && (
             <Alert severity="success" sx={{ mb: 2 }}>
@@ -522,8 +523,8 @@ function SkinPage() {
               </div>
             )}
           </div>
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Expanded Photo Overlay Modal */}
       {expandedPhoto && (
@@ -561,7 +562,7 @@ function SkinPage() {
           </button>
         </div>
       )}
-    </div>
+    </Box>
   );
 }
 

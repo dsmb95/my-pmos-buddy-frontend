@@ -4,6 +4,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import Menu from "../components/menu.jsx";
 
@@ -442,12 +443,12 @@ function FlowPage() {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <div className="page-container">
-      <div className="menu">
+    <Box className="page-container" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
+      <Box className="menu" sx={{ width: { xs: "100%", md: "250px" }, flexShrink: 0 }}>
         <Menu />
-      </div>
-      <div>
-        <div>
+      </Box>
+      <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, width: { xs: "100%", md: "calc(100% - 250px)" }, boxSizing: "border-box" }}>
+        <Box sx={{ mb: 4 }}>
           <h2>Cycle Predictor</h2>
           <Calendar
             onChange={setDate}
@@ -504,9 +505,9 @@ function FlowPage() {
               </span>
             </div>
           </div>
-        </div>
+        </Box>
 
-        <div>
+        <Box>
           <h2>Summary</h2>
           <div>
             <h4>Symptoms</h4>
@@ -870,9 +871,9 @@ function FlowPage() {
               )}
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

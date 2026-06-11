@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import { Link } from "react-router-dom";
+import Box from "@mui/material/Box";
 import Menu from "../components/menu.jsx";
 import WeightChart from '../components/weightChart.jsx';
 
@@ -103,15 +104,15 @@ function ProfilePage() {
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <div className="page-container">
-      <div className="menu">
+    <Box className="page-container" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
+      <Box className="menu" sx={{ width: { xs: "100%", md: "250px" }, flexShrink: 0 }}>
         <Menu/>
-      </div>
+      </Box>
 
-      <div className="profile-container">
-        <div className="profile-banner">
+      <Box className="profile-container" sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, width: { xs: "100%", md: "calc(100% - 250px)" }, boxSizing: "border-box", display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 3, alignContent: "start" }}>
+        <Box className="profile-banner" sx={{ gridColumn: "1 / -1", mb: 2 }}>
           <p>Welcome, {name}</p>
-        </div>
+        </Box>
         <div className="data-card">
           <Link to="/flow">
             <h2>Flow</h2>
@@ -197,7 +198,7 @@ function ProfilePage() {
             {weightData?.weight} {weightData?.unit}
           </p>
         </div>
-      </div>
+      </Box>
 
       {/* Expanded Photo Overlay Modal */}
       {expandedPhoto && (
@@ -235,7 +236,7 @@ function ProfilePage() {
           </button>
         </div>
       )}
-    </div>
+    </Box>
   );
 }
 
