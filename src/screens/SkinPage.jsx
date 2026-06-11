@@ -170,7 +170,15 @@ function SkinPage() {
   function formatDate(date) {
     if (!date) return "No date found!";
 
-    return new Date(date).toLocaleDateString("en-US", {
+    let parsedDate = new Date(date);
+    
+    // If the date is UTC midnight or a raw YYYY-MM-DD string, parse it as local time 
+    // by replacing dashes with slashes. This prevents it from shifting a day behind.
+    if (String(date).endsWith("T00:00:00.000Z") || (typeof date === "string" && !date.includes("T"))) {
+      parsedDate = new Date(String(date).substring(0, 10).replace(/-/g, "/"));
+    }
+
+    return parsedDate.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
