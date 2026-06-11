@@ -25,7 +25,7 @@ React web application for MyPMOSBuddy.
 See the /docs folder for the project proposal and architecture diagram.
 
 ## Project Overview
-MyPMOSBuddy is a comprehensive tracking application designed specifically for women managing PMOS (Polycystic Morphologic Ovarian Syndrome, formerly known as PCOS). With an estimated 10-15% of women affected globally, this app serves as an all-in-one buddy to help users figure out patterns and routines that work best for their bodies. It empowers users by providing tools to closely monitor their menstrual flow, skincare progress, weight fluctuations, and medication/supplement intake.
+MyPMOSBuddy is a comprehensive tracking application designed specifically for women managing PMOS (Polyendocrine Metabolic Ovarian Syndrome, formerly known as PCOS). With an estimated 10-15% of women affected globally, this app serves as an all-in-one buddy to help users figure out patterns and routines that work best for their bodies. It empowers users by providing tools to closely monitor their menstrual flow, skincare progress, weight fluctuations, and medication/supplement intake.
 
 ## Usage
 Once registered and logged into the application, users can navigate through different tracking modules to record and visualize their daily data:
