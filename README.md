@@ -1,6 +1,7 @@
 # MyPMOSBuddy - Frontend
 
 React web application for MyPMOSBuddy.
+Deployed on : https://my-pmos-buddy-frontend.onrender.com
 
 ## Prerequisites
 

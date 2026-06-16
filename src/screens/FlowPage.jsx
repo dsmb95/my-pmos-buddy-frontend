@@ -8,6 +8,12 @@ import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
 import Menu from "../components/menu.jsx";
 
+import Tooltip from "@mui/material/Tooltip";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+
 function FlowPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,9 +23,6 @@ function FlowPage() {
   const [lastPeriod, setLastPeriod] = useState("");
   const [cycleLength, setCycleLength] = useState("");
   const [periodLength, setPeriodLength] = useState("");
-
-  const [showInitialFlow, setShowInitialFlow] = useState(true);
-  const [showUpdateFlow, setShowUpdateFlow] = useState(false);
 
   const [apiPeriod1, setApiPeriod1] = useState([]);
   const [apiPeriod2, setApiPeriod2] = useState([]);
@@ -117,51 +120,6 @@ function FlowPage() {
     return null;
   };
 
-  const initialFlowSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      const body = {
-        lastPeriod: lastPeriod ? new Date(lastPeriod.replace(/-/g, "/")) : null,
-        cycleLength: cycleLength ? Number(cycleLength) : 28,
-        periodLength: periodLength ? Number(periodLength) : 5,
-      };
-
-      const response = await fetch(
-        "https://my-pmos-buddy-backend.onrender.com/api/flow",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        },
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Failed to submit.");
-        return;
-      }
-
-      setSuccess("Initial cycle log successfully created!");
-      setLastPeriod("");
-      setCycleLength("");
-      setPeriodLength("");
-      setShowInitialFlow(false);
-      setShowUpdateFlow(true);
-      setRefreshTrigger((prev) => !prev);
-    } catch (err) {
-      setError(err.message || "An error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const cycleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -171,7 +129,8 @@ function FlowPage() {
     try {
       const body = {};
 
-      if (lastPeriod) body.updateLastPeriod = new Date(lastPeriod.replace(/-/g, "/"));
+      if (lastPeriod)
+        body.updateLastPeriod = new Date(lastPeriod.replace(/-/g, "/"));
       if (cycleLength) body.updateCycleLength = Number(cycleLength);
       if (periodLength) body.updatePeriodLength = Number(periodLength);
 
@@ -262,7 +221,9 @@ function FlowPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            periodDay: periodDate ? new Date(periodDate.replace(/-/g, "/")) : null,
+            periodDay: periodDate
+              ? new Date(periodDate.replace(/-/g, "/"))
+              : null,
             firstDay: isFirstDay,
             flowLevel: flowLevel,
             periodNotes: periodNotes,
@@ -303,10 +264,13 @@ function FlowPage() {
     if (!date) return "No date";
 
     let parsedDate = new Date(date);
-    
-    // If the date is UTC midnight or a raw YYYY-MM-DD string, parse it as local time 
+
+    // If the date is UTC midnight or a raw YYYY-MM-DD string, parse it as local time
     // by replacing dashes with slashes. This prevents it from shifting a day behind.
-    if (String(date).endsWith("T00:00:00.000Z") || (typeof date === "string" && !date.includes("T"))) {
+    if (
+      String(date).endsWith("T00:00:00.000Z") ||
+      (typeof date === "string" && !date.includes("T"))
+    ) {
       parsedDate = new Date(String(date).substring(0, 10).replace(/-/g, "/"));
     }
 
@@ -433,11 +397,6 @@ function FlowPage() {
         setSymptomsFlowData(allSymptoms);
         setPeriodFlowData(allPeriodDates);
 
-        if (dataFlow && dataFlow.length > 0) {
-          setShowInitialFlow(false);
-          setShowUpdateFlow(true);
-        }
-
         console.log(symptomsFlowData);
       } catch (err) {
         setError(err.message || "Failed to fetch flow data.");
@@ -446,16 +405,32 @@ function FlowPage() {
     getFlowData();
   }, [refreshTrigger]);
 
-
   if (loading) return <CircularProgress aria-label="Loading..." />;
   if (error) return <Alert severity="error">{error}</Alert>;
 
   return (
-    <Box className="page-container" sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
-      <Box className="menu" sx={{ width: { xs: "100%", md: "250px" }, flexShrink: 0 }}>
+    <Box
+      className="page-container"
+      sx={{
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        minHeight: "100vh",
+      }}
+    >
+      <Box
+        className="menu"
+        sx={{ width: { xs: "100%", md: "250px" }, flexShrink: 0 }}
+      >
         <Menu />
       </Box>
-      <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, width: { xs: "100%", md: "calc(100% - 250px)" }, boxSizing: "border-box" }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, md: 4 },
+          width: { xs: "100%", md: "calc(100% - 250px)" },
+          boxSizing: "border-box",
+        }}
+      >
         <Box sx={{ mb: 4 }}>
           <h2>Cycle Predictor</h2>
           <Calendar
@@ -604,14 +579,10 @@ function FlowPage() {
                 {success}
               </Alert>
             )}
-
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "20px" }}
-            >
-              {showInitialFlow && (
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 <div className="data-card" style={{ textAlign: "left" }}>
-                  <h3 style={{ marginTop: 0 }}>Log initial cycle patterns</h3>
-                  <form onSubmit={initialFlowSubmit}>
+                  <h3 style={{ marginTop: 0 }}>Log your period</h3>
+                  <form onSubmit={periodSubmit}>
                     <div
                       style={{
                         display: "flex",
@@ -621,28 +592,83 @@ function FlowPage() {
                         marginBottom: "20px",
                       }}
                     >
-                      <TextField
-                        id="initial-last-period-input"
-                        label="First day of last period"
-                        required
-                        value={lastPeriod}
-                        onChange={({ target }) => setLastPeriod(target.value)}
-                        placeholder="YYYY-MM-DD"
-                      />
-                      <TextField
-                        id="initial-cycle-length-input"
-                        label="Cycle Length (Optional)"
-                        value={cycleLength}
-                        onChange={({ target }) => setCycleLength(target.value)}
-                        placeholder="Number of days"
-                      />
-                      <TextField
-                        id="initial-period-length-input"
-                        label="Period Length (Optional)"
-                        value={periodLength}
-                        onChange={({ target }) => setPeriodLength(target.value)}
-                        placeholder="Number of days"
-                      />
+                      <div>
+                        <h4>Date</h4>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker
+                            label="Date"
+                            value={periodDate ? dayjs(periodDate) : null}
+                            onChange={(newValue) =>
+                              setPeriodDate(newValue ? newValue.format("YYYY-MM-DD") : "")
+                            }
+                            slotProps={{
+                              textField: { required: true, id: "outline-required" }
+                            }}
+                          />
+                        </LocalizationProvider>
+                      </div>
+                      <div>
+                        <h4>Is this your first day?</h4>
+                        <label>
+                          <input
+                            type="radio"
+                            name="firstDayGroup"
+                            checked={isFirstDay === true}
+                            onChange={() => setIsFirstDay(true)}
+                          />
+                          Yes
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="firstDayGroup"
+                            checked={isFirstDay === false}
+                            onChange={() => setIsFirstDay(false)}
+                          />
+                          No
+                        </label>
+                      </div>
+                      <div>
+                        <h4>Flow Level</h4>
+                        <label>
+                          <input
+                            type="radio"
+                            name="flowLevelGroup"
+                            checked={flowLevel === "light"}
+                            onChange={() => setFlowLevel("light")}
+                          />
+                          Light
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="flowLevelGroup"
+                            checked={flowLevel === "medium"}
+                            onChange={() => setFlowLevel("medium")}
+                          />
+                          Medium
+                        </label>
+                        <label>
+                          <input
+                            type="radio"
+                            name="flowLevelGroup"
+                            checked={flowLevel === "heavy"}
+                            onChange={() => setFlowLevel("heavy")}
+                          />
+                          Heavy
+                        </label>
+                      </div>
+                      <div>
+                        <h4>Notes:</h4>
+                        <TextField
+                          id="outline"
+                          label="Notes"
+                          value={periodNotes}
+                          onChange={({ target }) =>
+                            setPeriodNotes(target.value)
+                          }
+                        />
+                      </div>
                     </div>
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
                       <Button type="submit" variant="contained" size="medium">
@@ -651,56 +677,7 @@ function FlowPage() {
                     </div>
                   </form>
                 </div>
-              )}
 
-              {showUpdateFlow && (
-                <div className="data-card" style={{ textAlign: "left" }}>
-                  <h3 style={{ marginTop: 0 }}>
-                    Update your current cycle patterns to improve cycle
-                    predictions.
-                  </h3>
-                  <form onSubmit={cycleSubmit}>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        gap: "40px",
-                        marginBottom: "20px",
-                      }}
-                    >
-                      <TextField
-                        id="last-period-input"
-                        label="First day of period"
-                        value={lastPeriod}
-                        onChange={({ target }) => setLastPeriod(target.value)}
-                        placeholder="YYYY-MM-DD"
-                      />
-                      <TextField
-                        id="cycle-length-input"
-                        label="Cycle Length"
-                        value={cycleLength}
-                        onChange={({ target }) => setCycleLength(target.value)}
-                        placeholder="Number of days"
-                      />
-                      <TextField
-                        id="period-length-input"
-                        label="Period Length"
-                        value={periodLength}
-                        onChange={({ target }) => setPeriodLength(target.value)}
-                        placeholder="Number of days"
-                      />
-                    </div>
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <Button type="submit" variant="contained" size="medium">
-                        Submit
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-              )}
-
-              {showUpdateFlow && (
                 <div className="data-card" style={{ textAlign: "left" }}>
                   <h3 style={{ marginTop: 0 }}>How are you feeling today?</h3>
                   <form onSubmit={symptomSubmit}>
@@ -780,12 +757,12 @@ function FlowPage() {
                     </div>
                   </form>
                 </div>
-              )}
-
-              {showUpdateFlow && (
                 <div className="data-card" style={{ textAlign: "left" }}>
-                  <h3 style={{ marginTop: 0 }}>Log your period</h3>
-                  <form onSubmit={periodSubmit}>
+                  <h3 style={{ marginTop: 0 }}>
+                    Update your current cycle patterns to improve cycle
+                    predictions.
+                  </h3>
+                  <form onSubmit={cycleSubmit}>
                     <div
                       style={{
                         display: "flex",
@@ -795,78 +772,124 @@ function FlowPage() {
                         marginBottom: "20px",
                       }}
                     >
-                      <div>
-                        <h4>Date</h4>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          <DatePicker
+                            label="First Day of Last Menstrual Period"
+                            value={lastPeriod ? dayjs(lastPeriod) : null}
+                            onChange={(newValue) =>
+                              setLastPeriod(
+                                newValue ? newValue.format("YYYY-MM-DD") : "",
+                              )
+                            }
+                            sx={{ flex: 1 }}
+                            slotProps={{
+                              textField: { required: true },
+                            }}
+                          />
+                          <Tooltip title="The first day of your most recent period. This helps predict your upcoming cycles.">
+                            <div
+                              style={{
+                                cursor: "help",
+                                background: "#ffb6b9",
+                                color: "#5c434a",
+                                borderRadius: "50%",
+                                width: "24px",
+                                height: "24px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                                flexShrink: 0,
+                              }}
+                            >
+                              ?
+                            </div>
+                          </Tooltip>
+                        </div>
+                      </LocalizationProvider>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
                         <TextField
-                          id="outline-required"
-                          required
-                          label="Date"
-                          placeholder="YYYY-MM-DD"
-                          value={periodDate}
-                          onChange={({ target }) => setPeriodDate(target.value)}
-                        />
-                      </div>
-                      <div>
-                        <h4>Is this your first day?</h4>
-                        <label>
-                          <input
-                            type="radio"
-                            name="firstDayGroup"
-                            checked={isFirstDay === true}
-                            onChange={() => setIsFirstDay(true)}
-                          />
-                          Yes
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="firstDayGroup"
-                            checked={isFirstDay === false}
-                            onChange={() => setIsFirstDay(false)}
-                          />
-                          No
-                        </label>
-                      </div>
-                      <div>
-                        <h4>Flow Level</h4>
-                        <label>
-                          <input
-                            type="radio"
-                            name="flowLevelGroup"
-                            checked={flowLevel === "light"}
-                            onChange={() => setFlowLevel("light")}
-                          />
-                          Light
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="flowLevelGroup"
-                            checked={flowLevel === "medium"}
-                            onChange={() => setFlowLevel("medium")}
-                          />
-                          Medium
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="flowLevelGroup"
-                            checked={flowLevel === "heavy"}
-                            onChange={() => setFlowLevel("heavy")}
-                          />
-                          Heavy
-                        </label>
-                      </div>
-                      <div>
-                        <h4>Notes:</h4>
-                        <TextField
-                          id="outline"
-                          label="Notes"
-                          value={periodNotes}
+                          id="cycle-length-input"
+                          label="Cycle Length"
+                          value={cycleLength}
                           onChange={({ target }) =>
-                            setPeriodNotes(target.value)
+                            setCycleLength(target.value)
                           }
+                          placeholder="Number of days"
+                            sx={{ flex: 1 }}
                         />
+                        <Tooltip title="The average number of days from the start of one period to the start of the next (typically 28 days).">
+                          <div
+                            style={{
+                              cursor: "help",
+                              background: "#ffb6b9",
+                              color: "#5c434a",
+                              borderRadius: "50%",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "14px",
+                              fontWeight: "bold",
+                              flexShrink: 0,
+                            }}
+                          >
+                            ?
+                          </div>
+                        </Tooltip>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                        }}
+                      >
+                        <TextField
+                          id="period-length-input"
+                          label="Period Length"
+                          value={periodLength}
+                          onChange={({ target }) =>
+                            setPeriodLength(target.value)
+                          }
+                          placeholder="Number of days"
+                            sx={{ flex: 1 }}
+                        />
+                        <Tooltip title="The average number of days your bleeding lasts (typically 5 days).">
+                          <div
+                            style={{
+                              cursor: "help",
+                              background: "#ffb6b9",
+                              color: "#5c434a",
+                              borderRadius: "50%",
+                              width: "24px",
+                              height: "24px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "14px",
+                              fontWeight: "bold",
+                              flexShrink: 0,
+                            }}
+                          >
+                            ?
+                          </div>
+                        </Tooltip>
                       </div>
                     </div>
                     <div style={{ textAlign: "center", marginTop: "20px" }}>
@@ -876,7 +899,6 @@ function FlowPage() {
                     </div>
                   </form>
                 </div>
-              )}
             </div>
           </div>
         </Box>
