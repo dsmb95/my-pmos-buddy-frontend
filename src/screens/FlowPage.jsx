@@ -23,6 +23,9 @@ function FlowPage() {
   const [lastPeriod, setLastPeriod] = useState("");
   const [cycleLength, setCycleLength] = useState("");
   const [periodLength, setPeriodLength] = useState("");
+  const [dataBaseLastPeriod, setDataBaseLastPeriod] = useState("");
+  const [dataBaseCycleLength, setDataBaseCycleLength] = useState("");
+  const [dataBasePeriodLength, setDataBasePeriodLength] = useState("");
 
   const [apiPeriod1, setApiPeriod1] = useState([]);
   const [apiPeriod2, setApiPeriod2] = useState([]);
@@ -47,7 +50,6 @@ function FlowPage() {
 
   const [symptomsFlowData, setSymptomsFlowData] = useState([]);
   const [periodFlowData, setPeriodFlowData] = useState([]);
-  const navigate = useNavigate();
 
   /*--SYMPTOMS ARRAY--*/
   const feelings = [
@@ -120,19 +122,30 @@ function FlowPage() {
     return null;
   };
 
-  const cycleSubmit = async (e) => {
+  const periodSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
     setSuccess("");
+    setLoading(true);
 
     try {
-      const body = {};
-
-      if (lastPeriod)
-        body.updateLastPeriod = new Date(lastPeriod.replace(/-/g, "/"));
-      if (cycleLength) body.updateCycleLength = Number(cycleLength);
-      if (periodLength) body.updatePeriodLength = Number(periodLength);
+      const body = {
+        updateLastPeriod: (isFirstDay && periodDate)
+          ? new Date(periodDate.replace(/-/g, "/"))
+          : (dataBaseLastPeriod ? new Date(dataBaseLastPeriod) : null),
+        updateCycleLength: cycleLength
+          ? Number(cycleLength)
+          : Number(dataBaseCycleLength) || 28,
+        updatePeriodLength: periodLength
+          ? Number(periodLength)
+          : Number(dataBasePeriodLength) || 5,
+        periodDay: periodDate
+          ? new Date(periodDate.replace(/-/g, "/"))
+          : null,
+        firstDay: isFirstDay,
+        flowLevel: flowLevel,
+        periodNotes: periodNotes,
+      };
 
       const response = await fetch(
         "https://my-pmos-buddy-backend.onrender.com/api/flow",
@@ -143,91 +156,6 @@ function FlowPage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(body),
-        },
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Failed to submit.");
-        return;
-      }
-
-      setSuccess("Cycle log successfully updated!");
-      setLastPeriod("");
-      setCycleLength("");
-      setPeriodLength("");
-      setRefreshTrigger((prev) => !prev);
-    } catch (err) {
-      setError(err.message || "An error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const symptomSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setSymptoms([]);
-    setAdditionalNotes("");
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://my-pmos-buddy-backend.onrender.com/api/flow",
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            symptomList: symptoms,
-            additionalNotes: additionalNotes,
-          }),
-        },
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.message || "Failed to submit.");
-        return;
-      }
-
-      setSuccess("Flow log successfully updated!");
-      setSymptoms([]);
-      setAdditionalNotes("");
-      setRefreshTrigger((prev) => !prev);
-    } catch (err) {
-      setError(err.message || "An error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const periodSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://my-pmos-buddy-backend.onrender.com/api/flow",
-        {
-          method: "PUT",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            periodDay: periodDate
-              ? new Date(periodDate.replace(/-/g, "/"))
-              : null,
-            firstDay: isFirstDay,
-            flowLevel: flowLevel,
-            periodNotes: periodNotes,
-          }),
         },
       );
 
@@ -243,9 +171,53 @@ function FlowPage() {
       setPeriodDate("");
       setFlowLevel(null);
       setPeriodNotes("");
+      setCycleLength("");
+      setPeriodLength("");
       setRefreshTrigger((prev) => !prev);
     } catch (err) {
       setError(err.message || "An error occured.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const symptomSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+    setLoading(true);
+
+    try {
+      const body = {
+        symptomList: symptoms,
+        additionalNotes: additionalNotes,
+      };
+
+      const response = await fetch(
+        "https://my-pmos-buddy-backend.onrender.com/api/flow",
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Failed to submit symptoms.");
+        return;
+      }
+
+      setSuccess("Symptoms successfully logged!");
+      setSymptoms([]);
+      setAdditionalNotes("");
+      setRefreshTrigger((prev) => !prev);
+    } catch (err) {
+      setError(err.message || "An error occurred.");
     } finally {
       setLoading(false);
     }
@@ -297,7 +269,9 @@ function FlowPage() {
 
         const cycleDataArray = response.ok ? await response.json() : [];
         const latestFlowDoc = cycleDataArray[cycleDataArray.length - 1];
-        const cycles = latestFlowDoc?.flowData?.apiPrediction?.data?.cycles;
+        const cycles =
+          latestFlowDoc?.apiPrediction?.data?.cycles ||
+          latestFlowDoc?.flowData?.apiPrediction?.data?.cycles;
 
         if (cycles) {
           // Set hooks for predicted menstrual cycle days.
@@ -397,7 +371,22 @@ function FlowPage() {
         setSymptomsFlowData(allSymptoms);
         setPeriodFlowData(allPeriodDates);
 
-        console.log(symptomsFlowData);
+        const latestFlowDoc = dataFlow[dataFlow.length - 1];
+        setDataBaseLastPeriod(
+          latestFlowDoc?.lastPeriod ||
+            latestFlowDoc?.flowData?.lastPeriod ||
+            "",
+        );
+        setDataBaseCycleLength(
+          latestFlowDoc?.cycleLength ||
+            latestFlowDoc?.flowData?.cycleLength ||
+            "",
+        );
+        setDataBasePeriodLength(
+          latestFlowDoc?.periodLength ||
+            latestFlowDoc?.flowData?.periodLength ||
+            "",
+        );
       } catch (err) {
         setError(err.message || "Failed to fetch flow data.");
       }
@@ -579,200 +568,113 @@ function FlowPage() {
                 {success}
               </Alert>
             )}
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                <div className="data-card" style={{ textAlign: "left" }}>
-                  <h3 style={{ marginTop: 0 }}>Log your period</h3>
-                  <form onSubmit={periodSubmit}>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        gap: "40px",
-                        marginBottom: "20px",
-                      }}
-                    >
-                      <div>
-                        <h4>Date</h4>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                          <DatePicker
-                            label="Date"
-                            value={periodDate ? dayjs(periodDate) : null}
-                            onChange={(newValue) =>
-                              setPeriodDate(newValue ? newValue.format("YYYY-MM-DD") : "")
-                            }
-                            slotProps={{
-                              textField: { required: true, id: "outline-required" }
-                            }}
-                          />
-                        </LocalizationProvider>
-                      </div>
-                      <div>
-                        <h4>Is this your first day?</h4>
-                        <label>
-                          <input
-                            type="radio"
-                            name="firstDayGroup"
-                            checked={isFirstDay === true}
-                            onChange={() => setIsFirstDay(true)}
-                          />
-                          Yes
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="firstDayGroup"
-                            checked={isFirstDay === false}
-                            onChange={() => setIsFirstDay(false)}
-                          />
-                          No
-                        </label>
-                      </div>
-                      <div>
-                        <h4>Flow Level</h4>
-                        <label>
-                          <input
-                            type="radio"
-                            name="flowLevelGroup"
-                            checked={flowLevel === "light"}
-                            onChange={() => setFlowLevel("light")}
-                          />
-                          Light
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="flowLevelGroup"
-                            checked={flowLevel === "medium"}
-                            onChange={() => setFlowLevel("medium")}
-                          />
-                          Medium
-                        </label>
-                        <label>
-                          <input
-                            type="radio"
-                            name="flowLevelGroup"
-                            checked={flowLevel === "heavy"}
-                            onChange={() => setFlowLevel("heavy")}
-                          />
-                          Heavy
-                        </label>
-                      </div>
-                      <div>
-                        <h4>Notes:</h4>
-                        <TextField
-                          id="outline"
-                          label="Notes"
-                          value={periodNotes}
-                          onChange={({ target }) =>
-                            setPeriodNotes(target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <Button type="submit" variant="contained" size="medium">
-                        Submit
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-
-                <div className="data-card" style={{ textAlign: "left" }}>
-                  <h3 style={{ marginTop: 0 }}>How are you feeling today?</h3>
-                  <form onSubmit={symptomSubmit}>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        gap: "40px",
-                        marginBottom: "20px",
-                      }}
-                    >
-                      <div>
-                        <h4>Feelings</h4>
-                        {feelings.map((feeling) => (
-                          <div key={feeling} style={{ marginBottom: "15px" }}>
-                            <label style={{ marginRight: "10px" }}>
-                              <input
-                                type="checkbox"
-                                value={feeling}
-                                checked={symptoms.includes(feeling)}
-                                onChange={() => toggleSymptom(feeling)}
-                              />
-                              {feeling}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <h4>Pain</h4>
-                        {pain.map((pain) => (
-                          <div key={pain} style={{ marginBottom: "15px" }}>
-                            <label style={{ marginRight: "10px" }}>
-                              <input
-                                type="checkbox"
-                                value={pain}
-                                checked={symptoms.includes(pain)}
-                                onChange={() => toggleSymptom(pain)}
-                              />
-                              {pain}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <h4>Energy</h4>
-                        {energy.map((energy) => (
-                          <div key={energy} style={{ marginBottom: "15px" }}>
-                            <label style={{ marginRight: "10px" }}>
-                              <input
-                                type="checkbox"
-                                value={energy}
-                                checked={symptoms.includes(energy)}
-                                onChange={() => toggleSymptom(energy)}
-                              />
-                              {energy}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                      <div>
-                        <h4>Notes:</h4>
-                        <TextField
-                          id="outline"
-                          label="Notes"
-                          value={additionalNotes}
-                          onChange={({ target }) =>
-                            setAdditionalNotes(target.value)
-                          }
-                        />
-                      </div>
-                    </div>
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <Button type="submit" variant="contained" size="medium">
-                        Submit
-                      </Button>
-                    </div>
-                  </form>
-                </div>
-                <div className="data-card" style={{ textAlign: "left" }}>
-                  <h3 style={{ marginTop: 0 }}>
-                    Update your current cycle patterns to improve cycle
-                    predictions.
-                  </h3>
-                  <form onSubmit={cycleSubmit}>
-                    <div
-                      style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        justifyContent: "center",
-                        gap: "40px",
-                        marginBottom: "20px",
-                      }}
-                    >
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "20px" }}
+            >
+              <div className="data-card" style={{ textAlign: "left" }}>
+                <h3 style={{ marginTop: 0 }}>Log your period</h3>
+                <form onSubmit={periodSubmit}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      gap: "40px",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <div>
+                      <h4>Date</h4>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          label="Date"
+                          value={periodDate ? dayjs(periodDate) : null}
+                          onChange={(newValue) =>
+                            setPeriodDate(
+                              newValue ? newValue.format("YYYY-MM-DD") : "",
+                            )
+                          }
+                          slotProps={{
+                            textField: {
+                              id: "outline-required",
+                            },
+                          }}
+                        />
+                      </LocalizationProvider>
+                    </div>
+                    <div>
+                      <h4>Is this your first day?</h4>
+                      <label>
+                        <input
+                          type="radio"
+                          name="firstDayGroup"
+                          checked={isFirstDay === true}
+                          onChange={() => setIsFirstDay(true)}
+                        />
+                        Yes
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="firstDayGroup"
+                          checked={isFirstDay === false}
+                          onChange={() => setIsFirstDay(false)}
+                        />
+                        No
+                      </label>
+                    </div>
+                    <div>
+                      <h4>Flow Level</h4>
+                      <label>
+                        <input
+                          type="radio"
+                          name="flowLevelGroup"
+                          checked={flowLevel === "light"}
+                          onChange={() => setFlowLevel("light")}
+                        />
+                        Light
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="flowLevelGroup"
+                          checked={flowLevel === "medium"}
+                          onChange={() => setFlowLevel("medium")}
+                        />
+                        Medium
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="flowLevelGroup"
+                          checked={flowLevel === "heavy"}
+                          onChange={() => setFlowLevel("heavy")}
+                        />
+                        Heavy
+                      </label>
+                    </div>
+                    <div>
+                      <h4>Notes:</h4>
+                      <TextField
+                        id="outline"
+                        label="Notes"
+                        value={periodNotes}
+                        onChange={({ target }) => setPeriodNotes(target.value)}
+                      />
+                    </div>
+
+                    <div style={{ width: "100%", textAlign: "center" }}>
+                      <h4 style={{ marginTop: 0, marginBottom: "15px" }}>
+                        Update to Improve cycle predictions
+                      </h4>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "center",
+                          gap: "40px",
+                        }}
+                      >
                         <div
                           style={{
                             display: "flex",
@@ -780,20 +682,17 @@ function FlowPage() {
                             gap: "10px",
                           }}
                         >
-                          <DatePicker
-                            label="First Day of Last Menstrual Period"
-                            value={lastPeriod ? dayjs(lastPeriod) : null}
-                            onChange={(newValue) =>
-                              setLastPeriod(
-                                newValue ? newValue.format("YYYY-MM-DD") : "",
-                              )
+                          <TextField
+                            id="cycle-length-input"
+                            label="New Cycle Length (Optional)"
+                            value={cycleLength}
+                            onChange={({ target }) =>
+                              setCycleLength(target.value)
                             }
+                            placeholder={String(dataBaseCycleLength) || "28"}
                             sx={{ flex: 1 }}
-                            slotProps={{
-                              textField: { required: true },
-                            }}
                           />
-                          <Tooltip title="The first day of your most recent period. This helps predict your upcoming cycles.">
+                          <Tooltip title="Optional: Update your average cycle length. If left blank, your previous average will be used.">
                             <div
                               style={{
                                 cursor: "help",
@@ -814,91 +713,134 @@ function FlowPage() {
                             </div>
                           </Tooltip>
                         </div>
-                      </LocalizationProvider>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        <TextField
-                          id="cycle-length-input"
-                          label="Cycle Length"
-                          value={cycleLength}
-                          onChange={({ target }) =>
-                            setCycleLength(target.value)
-                          }
-                          placeholder="Number of days"
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          <TextField
+                            id="period-length-input"
+                            label="New Period Length (Optional)"
+                            value={periodLength}
+                            onChange={({ target }) =>
+                              setPeriodLength(target.value)
+                            }
+                            placeholder={String(dataBasePeriodLength) || "5"}
                             sx={{ flex: 1 }}
-                        />
-                        <Tooltip title="The average number of days from the start of one period to the start of the next (typically 28 days).">
-                          <div
-                            style={{
-                              cursor: "help",
-                              background: "#ffb6b9",
-                              color: "#5c434a",
-                              borderRadius: "50%",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "14px",
-                              fontWeight: "bold",
-                              flexShrink: 0,
-                            }}
-                          >
-                            ?
-                          </div>
-                        </Tooltip>
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        <TextField
-                          id="period-length-input"
-                          label="Period Length"
-                          value={periodLength}
-                          onChange={({ target }) =>
-                            setPeriodLength(target.value)
-                          }
-                          placeholder="Number of days"
-                            sx={{ flex: 1 }}
-                        />
-                        <Tooltip title="The average number of days your bleeding lasts (typically 5 days).">
-                          <div
-                            style={{
-                              cursor: "help",
-                              background: "#ffb6b9",
-                              color: "#5c434a",
-                              borderRadius: "50%",
-                              width: "24px",
-                              height: "24px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "14px",
-                              fontWeight: "bold",
-                              flexShrink: 0,
-                            }}
-                          >
-                            ?
-                          </div>
-                        </Tooltip>
+                          />
+                          <Tooltip title="Optional: Update your average period length. If left blank, your previous average will be used.">
+                            <div
+                              style={{
+                                cursor: "help",
+                                background: "#ffb6b9",
+                                color: "#5c434a",
+                                borderRadius: "50%",
+                                width: "24px",
+                                height: "24px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "14px",
+                                fontWeight: "bold",
+                                flexShrink: 0,
+                              }}
+                            >
+                              ?
+                            </div>
+                          </Tooltip>
+                        </div>
                       </div>
                     </div>
-                    <div style={{ textAlign: "center", marginTop: "20px" }}>
-                      <Button type="submit" variant="contained" size="medium">
-                        Submit
-                      </Button>
+                  </div>
+                  <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <Button type="submit" variant="contained" size="medium">
+                      Submit
+                    </Button>
+                  </div>
+                </form>
+              </div>
+
+              <div className="data-card" style={{ textAlign: "left" }}>
+                <h3 style={{ marginTop: 0 }}>How are you feeling today?</h3>
+                <form onSubmit={symptomSubmit}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
+                      gap: "40px",
+                      marginBottom: "20px",
+                    }}
+                  >
+                    <div>
+                      <h4>Feelings</h4>
+                      {feelings.map((feeling) => (
+                        <div key={feeling} style={{ marginBottom: "15px" }}>
+                          <label style={{ marginRight: "10px" }}>
+                            <input
+                              type="checkbox"
+                              value={feeling}
+                              checked={symptoms.includes(feeling)}
+                              onChange={() => toggleSymptom(feeling)}
+                            />
+                            {feeling}
+                          </label>
+                        </div>
+                      ))}
                     </div>
-                  </form>
-                </div>
+                    <div>
+                      <h4>Pain</h4>
+                      {pain.map((pain) => (
+                        <div key={pain} style={{ marginBottom: "15px" }}>
+                          <label style={{ marginRight: "10px" }}>
+                            <input
+                              type="checkbox"
+                              value={pain}
+                              checked={symptoms.includes(pain)}
+                              onChange={() => toggleSymptom(pain)}
+                            />
+                            {pain}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <h4>Energy</h4>
+                      {energy.map((energy) => (
+                        <div key={energy} style={{ marginBottom: "15px" }}>
+                          <label style={{ marginRight: "10px" }}>
+                            <input
+                              type="checkbox"
+                              value={energy}
+                              checked={symptoms.includes(energy)}
+                              onChange={() => toggleSymptom(energy)}
+                            />
+                            {energy}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <h4>Notes:</h4>
+                      <TextField
+                        id="outline"
+                        label="Notes"
+                        value={additionalNotes}
+                        onChange={({ target }) =>
+                          setAdditionalNotes(target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "center", marginTop: "20px" }}>
+                    <Button type="submit" variant="contained" size="medium">
+                      Submit
+                    </Button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </Box>
