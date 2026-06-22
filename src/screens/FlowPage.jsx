@@ -5,7 +5,6 @@ import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { useNavigate } from "react-router-dom";
 import Menu from "../components/menu.jsx";
 
 import Tooltip from "@mui/material/Tooltip";
@@ -20,7 +19,6 @@ function FlowPage() {
   const [success, setSuccess] = useState("");
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
-  const [lastPeriod, setLastPeriod] = useState("");
   const [cycleLength, setCycleLength] = useState("");
   const [periodLength, setPeriodLength] = useState("");
   const [dataBaseLastPeriod, setDataBaseLastPeriod] = useState("");
@@ -502,15 +500,14 @@ function FlowPage() {
                   }}
                 >
                   <p style={{ margin: "5px 0" }}>
-                    <strong>Date:</strong>{" "}
-                    {formatDate(symptomLog.date) || "No date found!"}
+                    <strong style={{fontSize: 19}}>{formatDate(symptomLog.date) || "No date found!"}</strong>
                   </p>
                   <p style={{ margin: "5px 0" }}>
-                    <strong>Symptoms:</strong>{" "}
+                    <strong>Symptoms</strong>{" "} <br></br>
                     {symptomLog.symptomList?.join(", ")}
                   </p>
                   <p style={{ margin: "5px 0" }}>
-                    <strong>Notes:</strong> {symptomLog.additionalNotes}
+                    <strong>Notes</strong> <br></br>{symptomLog.additionalNotes}
                   </p>
                 </div>
               ))}
@@ -541,11 +538,11 @@ function FlowPage() {
                   }}
                 >
                   <p style={{ margin: "5px 0" }}>
-                    <strong>Date:</strong> {formatDate(periodLog.periodDay)}
+                    <strong style={{fontSize: 19}}>{formatDate(periodLog.periodDay)}</strong> 
                   </p>
                   <p style={{ margin: "5px 0" }}>
                     <strong>First Day:</strong>{" "}
-                    {periodLog.firstDay ? "Yes" : "No"}
+                    {periodLog.firstDay ? "✅" : "❌"}
                   </p>
                   <p style={{ margin: "5px 0" }}>
                     <strong>Flow Level:</strong> {periodLog.flowLevel}

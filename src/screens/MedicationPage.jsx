@@ -4,7 +4,6 @@ import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { NavLink, useNavigate } from "react-router-dom";
 import Menu from "../components/menu.jsx";
 
 function MedicationPage() {
@@ -147,7 +146,7 @@ function MedicationPage() {
                 key={index}
                 style={{ borderBottom: "1px solid #eaeaea", marginBottom: "15px", paddingBottom: "15px" }}
               >
-                <p style={{ margin: "5px 0" }}><strong>Name:</strong> {med.name}</p>
+                <p style={{ margin: "5px 0" }}><strong style={{fontSize: 19}}>{med.name}</strong></p>
                 <p style={{ margin: "5px 0" }}><strong>Dosage:</strong> {med.dosage}</p>
                 <p style={{ margin: "5px 0" }}><strong>Frequency:</strong> {med.frequency}</p>
                 <Button variant="outlined" color="error" size="small" onClick={() => deleteMedication(med._id)} sx={{ mt: 1 }}>

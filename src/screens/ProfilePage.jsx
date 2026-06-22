@@ -125,24 +125,24 @@ function ProfilePage() {
           <Link to="/flow">
             <h2>Flow</h2>
           </Link>
-          <p>Last period started on: {formatDate(flowData?.lastPeriod)}</p>
+          <p><strong>Last Menstrual Period </strong> <br></br> {formatDate(flowData?.lastPeriod)}</p>
           <p>
-            Cycle length: {flowData?.apiPrediction?.data?.cycle_length} days
+            <strong>Cycle length</strong> <br></br> {flowData?.apiPrediction?.data?.cycle_length} days
           </p>
           <p>
-            Next period starts:{" "}
+            <strong>Next Period Starts</strong> <br></br> {" "}
             {formatDate(
               flowData?.apiPrediction?.data?.cycles[0]?.period?.start_date,
             )}
           </p>
           <p>
-            Ovulation period:{" "}
+            <strong>Ovulation Period</strong> <br></br> {" "}
             {formatDate(
               flowData?.apiPrediction?.data?.cycles[0]?.ovulation?.date,
             )}
           </p>
           <p>
-            PMS period:{" "}
+            <strong>PMS period</strong> <br></br> {" "}
             {formatDate(
               flowData?.apiPrediction?.data?.cycles[0]?.pms_phase?.start_date,
             )}{" "}
@@ -156,14 +156,14 @@ function ProfilePage() {
           <Link to="/skin">
             <h2>Skin</h2>
           </Link>
-          <p>Last logged on: {formatDate(skinData?.date)}</p>
+          <p><strong>Last Log</strong> <br></br> {formatDate(skinData?.date)}</p>
           <p>
-            Skin Log:{" "}
+            <strong>Skin Log</strong> <br></br>{" "}
             {skinData?.skinLog && skinData.skinLog.length > 0 
               ? skinData.skinLog.join(", ") 
               : "None logged"}
           </p>
-          <p>Notes: {skinData?.skinNotes}</p>
+          <p><strong>Note</strong> <br></br> {skinData?.skinNotes}</p>
         {skinData?.photos && skinData.photos.length > 0 && (
           <div style={{ 
             display: "flex", 
@@ -190,7 +190,7 @@ function ProfilePage() {
           <Link to="/medication"><h2>Medications</h2></Link>
           {medData?.medications?.map((med, index) => (
             <p key={index}>
-              {med.name} {med.dosage} {med.frequency}
+              <strong style={{fontSize:18}}>{med.name}</strong> <br></br> {med.dosage} {med.frequency}
             </p>
           ))}
         </div>
@@ -201,9 +201,9 @@ function ProfilePage() {
           <div>
             <WeightChart height="200px" />
           </div>
-          <p>Last logged on: {formatDate(weightData?.date)}</p>
-          <p>
-            {weightData?.weight} {weightData?.unit}
+          <p><strong>Last Log</strong> <br></br> {formatDate(weightData?.date)}</p>
+          <p style={{fontSize: 20}}>
+            <strong>{weightData?.weight} {weightData?.unit}</strong>
           </p>
         </div>
       </Box>
