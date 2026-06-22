@@ -182,8 +182,8 @@ function WeightPage() {
                   key={index}
                   style={{ borderBottom: "1px solid #eaeaea", marginBottom: "15px", paddingBottom: "15px" }}
                 >
-                  <p style={{ margin: "5px 0" }}><strong>Date:</strong> {formatDate(weightEntry.date)}</p>
-                  <p style={{ margin: "5px 0" }}><strong>Weight:</strong> {weightEntry.weight} {weightEntry.unit}</p>
+                  <p style={{ margin: "5px 0" }}><strong>{formatDate(weightEntry.date)}</strong></p>
+                  <p style={{ margin: "5px 0" }}> {weightEntry.weight} {weightEntry.unit}</p>
                 </div>
               ))}
               {(!weight || weight.length === 0) && <p>No weight logs yet.</p>}

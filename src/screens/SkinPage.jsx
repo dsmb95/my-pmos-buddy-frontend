@@ -3,7 +3,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
 import Menu from "../components/menu.jsx";
 import Box from "@mui/material/Box";
 
@@ -301,7 +300,7 @@ function SkinPage() {
                     paddingBottom: "15px",
                   }}
                 >
-                  <p style={{ margin: "5px 0" }}><strong>Date:</strong> {formatDate(entry?.date)}</p>
+                  <p style={{ margin: "5px 0" }}><strong style={{fontSize: 19}}>{formatDate(entry?.date)}</strong></p>
                   <p style={{ margin: "5px 0" }}>
                     <strong>Skin Log:</strong>{" "}
                     {Array.isArray(entry?.skinLog)
