@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from 'react';
+import { useState } from "react";
 
 function Menu() {
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+  const [, setError] = useState("");
+  const navigate = useNavigate();
 
   const logout = async (e) => {
     if (e) e.preventDefault();
@@ -30,7 +30,10 @@ function Menu() {
   };
   return (
     <>
-      <h1 style={{paddingTop:50}}>Menu</h1>
+      <div className="menu-brand">
+        <h1>My PMOS Buddy</h1>
+        <p>Daily tracker</p>
+      </div>
       <NavLink to="/profile">Home</NavLink>
       <NavLink to="/flow">Flow</NavLink>
       <NavLink to="/skin">Skin</NavLink>
