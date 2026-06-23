@@ -509,6 +509,7 @@ function FlowPage() {
       >
         <Box sx={{ mb: 4 }}>
           <h2>Cycle Predictor</h2>
+          <p>Click on the dates to log your period.</p>
           <Calendar
             onChange={setDate}
             value={date}
