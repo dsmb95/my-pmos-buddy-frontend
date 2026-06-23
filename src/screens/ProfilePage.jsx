@@ -130,25 +130,21 @@ function ProfilePage() {
             <strong>Cycle length</strong> <br></br> {flowData?.apiPrediction?.data?.cycle_length} days
           </p>
           <p>
-            <strong>Next Period Starts</strong> <br></br> {" "}
+            <strong>Next Menstrual Cycle Starts</strong> <br></br> {" "}
             {formatDate(
               flowData?.apiPrediction?.data?.cycles[0]?.period?.start_date,
             )}
           </p>
           <p>
-            <strong>Ovulation Period</strong> <br></br> {" "}
+            <strong>Ovulation Period Starts</strong> <br></br> {" "}
             {formatDate(
               flowData?.apiPrediction?.data?.cycles[0]?.ovulation?.date,
             )}
           </p>
           <p>
-            <strong>PMS period</strong> <br></br> {" "}
+            <strong>PMS Period Starts</strong> <br></br> {" "}
             {formatDate(
               flowData?.apiPrediction?.data?.cycles[0]?.pms_phase?.start_date,
-            )}{" "}
-            to{" "}
-            {formatDate(
-              flowData?.apiPrediction?.data?.cycles[0]?.pms_phase?.end_date,
             )}
           </p>
         </div>

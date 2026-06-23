@@ -19,6 +19,7 @@ function WeightPage() {
 
   const [showInitialWeight, setShowInitialWeight] = useState(true);
   const [showUpdateWeight, setShowUpdateWeight] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   useEffect(() => {
     const getWeightData = async () => {
@@ -64,7 +65,7 @@ function WeightPage() {
     };
 
     getWeightData();
-  }, [updateWeight, updateWeightUnit]);
+  }, [refreshTrigger]);
 
   function formatDate(date) {
     if (!date) return "No date found!";
@@ -115,6 +116,7 @@ function WeightPage() {
       setSuccess("Successfully created your initial weight log!");
       setInitialWeight("");
       setInitialWeightUnit("");
+      setRefreshTrigger((prev) => !prev);
     } catch (err) {
       setError(err.message || "Failed to submit your initial weight.");
     } finally {
@@ -153,10 +155,38 @@ function WeightPage() {
         setUpdateWeight("");
         setUpdateWeightUnit("");
         setSuccess("Weight successfully updated.")
+        setRefreshTrigger((prev) => !prev);
     } catch(err) {
         setError(err.message || "Failed to update weight.")
     } finally {
         setLoading(false);
+    }
+  };
+
+  const deleteWeightLog = async (weightId) => {
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch(
+        `https://my-pmos-buddy-backend.onrender.com/api/weight/${weightId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || "Failed to delete weight log.");
+        return;
+      }
+
+      setSuccess("Weight log deleted.");
+      setRefreshTrigger((prev) => !prev);
+    } catch (err) {
+      setError(err.message || "Failed to delete weight log.");
     }
   };
 
@@ -179,11 +209,30 @@ function WeightPage() {
             <div className="data-card" style={{ maxHeight: "350px", overflowY: "auto", textAlign: "left", padding: "20px" }}>
               {weight?.map((weightEntry, index) => (
                 <div
-                  key={index}
-                  style={{ borderBottom: "1px solid #eaeaea", marginBottom: "15px", paddingBottom: "15px" }}
+                  key={weightEntry?._id || index}
+                  style={{
+                    borderBottom: "1px solid #eaeaea",
+                    marginBottom: "15px",
+                    paddingBottom: "15px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: "15px",
+                  }}
                 >
-                  <p style={{ margin: "5px 0" }}><strong>{formatDate(weightEntry.date)}</strong></p>
-                  <p style={{ margin: "5px 0" }}> {weightEntry.weight} {weightEntry.unit}</p>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ margin: "5px 0" }}><strong>{formatDate(weightEntry.date)}</strong></p>
+                    <p style={{ margin: "5px 0" }}> {weightEntry.weight} {weightEntry.unit}</p>
+                  </div>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => deleteWeightLog(weightEntry._id)}
+                    sx={{ flexShrink: 0, mt: 0.5 }}
+                  >
+                    Delete
+                  </Button>
                 </div>
               ))}
               {(!weight || weight.length === 0) && <p>No weight logs yet.</p>}

@@ -143,7 +143,7 @@ function SkinPage() {
       let data;
       try {
         data = JSON.parse(responseText);
-      } catch (parseErr) {
+      } catch {
         data = { message: responseText };
       }
 
@@ -163,6 +163,46 @@ function SkinPage() {
       setError(err.message || "Failed to submit your skin data.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteSkinLog = async (skinDataId) => {
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await fetch(
+        `https://my-pmos-buddy-backend.onrender.com/api/skin/logs/${skinDataId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        },
+      );
+
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        data = { message: responseText };
+      }
+
+      if (!response.ok) {
+        const errorString = JSON.stringify(data);
+        setError(
+          data.message ||
+            data.error ||
+            (errorString !== "{}"
+              ? errorString
+              : "Failed to delete skin log."),
+        );
+        return;
+      }
+
+      setSuccess("Skin log deleted.");
+      setRefreshTrigger((prev) => !prev);
+    } catch (err) {
+      setError(err.message || "Failed to delete skin log.");
     }
   };
 
@@ -293,44 +333,59 @@ function SkinPage() {
             <div className="data-card" style={{ maxHeight: "350px", overflowY: "auto", textAlign: "left", padding: "20px" }}>
               {skinData?.map((entry, index) => (
                 <div
-                  key={index}
+                  key={entry?._id || index}
                   style={{
                     borderBottom: "1px solid #eaeaea",
                     marginBottom: "15px",
                     paddingBottom: "15px",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    gap: "15px",
                   }}
                 >
-                  <p style={{ margin: "5px 0" }}><strong style={{fontSize: 19}}>{formatDate(entry?.date)}</strong></p>
-                  <p style={{ margin: "5px 0" }}>
-                    <strong>Skin Log:</strong>{" "}
-                    {Array.isArray(entry?.skinLog)
-                      ? entry.skinLog.join(", ")
-                      : entry?.skinLog}
-                  </p>
-                  <p style={{ margin: "5px 0" }}><strong>Notes:</strong> {entry?.skinNotes}</p>
-                  {entry?.photos && entry.photos.length > 0 && (
-                    <>
-                      <p style={{ margin: "5px 0" }}><strong>Photos:</strong></p>
-                      <div style={{ 
-                        display: "flex", 
-                        flexWrap: "nowrap", 
-                        gap: "10px", 
-                        overflowX: "auto", 
-                        padding: "10px 0", 
-                        scrollSnapType: "x mandatory"
-                      }}>
-                        {entry.photos.map((photo, photoIdx) => (
-                          <img 
-                            key={photoIdx} 
-                            src={photo.url} 
-                            alt={`Skin log ${photoIdx + 1}`} 
-                            style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", flexShrink: 0, scrollSnapAlign: "start", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer" }}
-                            onClick={() => setExpandedPhoto(photo.url)}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ margin: "5px 0" }}><strong style={{fontSize: 19}}>{formatDate(entry?.date)}</strong></p>
+                    <p style={{ margin: "5px 0" }}>
+                      <strong>Skin Log:</strong>{" "}
+                      {Array.isArray(entry?.skinLog)
+                        ? entry.skinLog.join(", ")
+                        : entry?.skinLog}
+                    </p>
+                    <p style={{ margin: "5px 0" }}><strong>Notes:</strong> {entry?.skinNotes}</p>
+                    {entry?.photos && entry.photos.length > 0 && (
+                      <>
+                        <p style={{ margin: "5px 0" }}><strong>Photos:</strong></p>
+                        <div style={{ 
+                          display: "flex", 
+                          flexWrap: "nowrap", 
+                          gap: "10px", 
+                          overflowX: "auto", 
+                          padding: "10px 0", 
+                          scrollSnapType: "x mandatory"
+                        }}>
+                          {entry.photos.map((photo, photoIdx) => (
+                            <img 
+                              key={photoIdx} 
+                              src={photo.url} 
+                              alt={`Skin log ${photoIdx + 1}`} 
+                              style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", flexShrink: 0, scrollSnapAlign: "start", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer" }}
+                              onClick={() => setExpandedPhoto(photo.url)}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => deleteSkinLog(entry._id)}
+                    sx={{ flexShrink: 0, mt: 0.5 }}
+                  >
+                    Delete
+                  </Button>
                 </div>
               ))}
               {(!skinData || skinData.length === 0) && <p>No skin logs yet.</p>}
