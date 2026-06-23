@@ -187,6 +187,12 @@ h1, h2, h3 {
 
 
 /* react-calendar custom highlights */
+.highlight-logged-period {
+  background-color: #d67d8d !important;
+  color: white !important;
+  border-radius: 8px !important;
+}
+
 .highlight-period {
   background-color: #ffb6b9 !important; /* Pastel Pink/Red */
   color: #5c434a !important;
