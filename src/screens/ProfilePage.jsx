@@ -117,8 +117,8 @@ function ProfilePage() {
         <Menu/>
       </Box>
 
-      <Box className="profile-container" sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, width: { xs: "100%", md: "calc(100% - 250px)" }, boxSizing: "border-box", display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 3, alignContent: "start" }}>
-        <Box className="profile-banner" sx={{ gridColumn: "1 / -1", mb: 2 }}>
+      <Box className="profile-container" sx={{ flexGrow: 1, px: { xs: 2, md: 4 }, pb: { xs: 2, md: 4 }, pt: 0, mt: { xs: 0, md: -4 }, width: { xs: "100%", md: "calc(100% - 250px)" }, boxSizing: "border-box", display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, columnGap: 3, rowGap: 2, alignContent: "start" }}>
+        <Box className="profile-banner" sx={{ gridColumn: "1 / -1", mb: 0 }}>
           <p>Welcome, {name}</p>
         </Box>
         <div className="data-card">
